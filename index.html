@@ -108,9 +108,39 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .chat-input-row input:focus{outline:2px solid var(--teal);outline-offset:1px;}
 .chat-input-row button{padding:0.7rem 1.3rem;background:var(--teal);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:13.5px;cursor:pointer;}
 .chat-input-row button:hover{filter:brightness(1.08);}
+#chatMic{padding:0.7rem 0.9rem;background:var(--white);border:1px solid var(--border);color:var(--navy);font-size:16px;}
+#chatMic:hover{background:var(--cream);}
+#chatMic.listening{background:var(--teal);border-color:var(--teal);color:#fff;}
 .chat-actions{display:flex;gap:0.6rem;flex-wrap:wrap;}
 .chat-actions button{padding:0.5rem 0.9rem;background:transparent;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text-muted);cursor:pointer;font-weight:600;}
 .chat-actions button:hover{background:var(--cream);}
+
+/* FUTURE IDEAS — visually distinct from active steps: no checkbox, no
+   progress tracking, just something to open and read when curious. */
+.future-heading{margin:2.5rem 0 0.5rem;}
+.future-heading .section-label{margin:0 0 0.35rem;}
+.future-sub{font-size:13px;color:var(--text-muted);line-height:1.55;margin-bottom:1rem;}
+.idea{background:var(--white);border:1px dashed var(--border);border-radius:var(--radius);margin-bottom:0.7rem;overflow:hidden;}
+.idea-head{display:flex;align-items:flex-start;gap:0.9rem;padding:1.1rem 1.3rem;cursor:pointer;}
+.idea-plus{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--sand);background:transparent;transition:transform 0.2s;}
+.idea.expanded .idea-plus{transform:rotate(45deg);}
+.idea-title{font-size:0.92rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;}
+.idea-blurb{font-size:13px;color:var(--text-muted);line-height:1.5;}
+.idea-detail{display:none;padding:0 1.3rem 1.1rem 3rem;}
+.idea.expanded .idea-detail{display:block;}
+.idea-detail .detail-body{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:0.7rem;}
+.idea-preview{list-style:none;display:flex;flex-direction:column;gap:0.35rem;}
+.idea-preview li{font-size:12.5px;color:var(--text-muted);padding-left:1rem;position:relative;line-height:1.5;}
+.idea-preview li::before{content:'—';position:absolute;left:0;color:var(--teal);}
+
+/* FULL ROADMAP — same interactive step style as the confirmed steps above,
+   grouped by phase. Separate from the main progress bar on purpose: this
+   is the fuller strategy, not the near-term commitment. */
+.phase-header{display:flex;align-items:baseline;gap:10px;margin:1.7rem 0 0.8rem;}
+.phase-header .num{font-family:var(--d);font-weight:700;font-size:1.3rem;color:var(--teal);}
+.phase-header .t{font-family:var(--d);font-weight:700;font-size:1.05rem;color:var(--navy);}
+.phase-header .days{font-size:10.5px;color:var(--sand);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
+.tag-days{background:var(--cream-dark);color:var(--sand);}
 
 @media(max-width:640px){
   .wrap{padding:2rem 1.25rem 4rem;}
@@ -142,6 +172,26 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
   <div class="section-label">Your action steps</div>
   <div id="stepsList"></div>
 
+  <div class="future-heading">
+    <div class="section-label">Bigger ideas — for when you're ready</div>
+    <div class="future-sub">
+      Nothing below this line is happening yet, and nothing moves forward until you say so.
+      These are things we're excited about for later — tap any of them open just to see what
+      we mean, no pressure at all.
+    </div>
+  </div>
+  <div id="ideasList"></div>
+
+  <div class="future-heading">
+    <div class="section-label">The full 90-day roadmap</div>
+    <div class="future-sub">
+      This is the fuller strategy, if the 500-contact test goes well and you want to keep going.
+      Organized by phase with rough timing — still nothing scheduled or committed, just the
+      bigger picture so you can see where this could lead. Tap any step to open it up.
+    </div>
+  </div>
+  <div id="roadmapList"></div>
+
   <div class="cta-card">
     <div class="cta-title">Questions on any of these steps?</div>
     <div class="cta-body">Book time with your advisor to walk through progress, priorities, or anything that's unclear.</div>
@@ -157,6 +207,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     <div id="chatLog" class="chat-log"></div>
     <div class="chat-input-row">
       <input id="chatInput" type="text" placeholder="Type here..." />
+      <button id="chatMic" type="button" title="Tap to talk instead of typing" style="display:none;">🎤</button>
       <button id="chatSend">Send</button>
     </div>
     <div class="chat-actions">
@@ -177,107 +228,287 @@ const CLIENT = {
   slug: 'alpine-acres',
   clientName: 'Agnes',
   businessName: 'Alpine Acres Sanctuary Farm',
-  subhead: "Your readiness score was 38/100 (Building tier). You already have the hardest thing most organizations lack — an engaged audience and a genuinely unique story. These four moves connect what you've already built.",
+  subhead: "We're starting small and slow, on your terms. Nothing here happens without you seeing it first, and nothing about how you already run things changes unless you decide it should.",
   bookingUrl: 'https://meetings.hubspot.com/matt-barnhart/eai-meeting'
 };
 
 const PLAN = [
   {
-    title: "Keep Agnes's monthly send as-is, and test segmentation on her bottom ~500",
+    title: "Pull and segment your first 500 test contacts in Zeffy",
     aiOrHuman: 'human',
-    description: "Agnes keeps sending her existing monthly newsletter to everyone on her current platform — no disruption there. In parallel, we ask her for her bottom ~500 least-engaged contacts and run a segmented Beehiiv version with just that group, to see what a tailored send can do.",
-    whyItMatters: "This is a live test, not a full migration — Agnes doesn't have to change anything about what's already working. The bottom ~500 are the contacts her current one-size-fits-all newsletter is least likely to be reaching well, so they're the clearest group to prove out whether segmentation moves the needle before asking her to change platforms for everyone.",
+    description: "Tracy meets with you this week to look at Zeffy's backend together and pull the first 500 of your roughly 10,000 least-active subscribers — a safe, low-stakes group to test with.",
+    whyItMatters: "Starting with your least-active contacts means your most engaged donors and members aren't touched while we figure out what actually works. Nothing about your main list changes.",
     actionItems: [
-      "Confirm with Agnes that her existing monthly send continues unchanged, to her full list, on her current platform",
-      "Ask Agnes for an export of her bottom ~500 least-engaged contacts (lowest opens/clicks, or longest since last interaction)",
-      "Set up a Beehiiv newsletter for that ~500-person segment",
-      "Draft the first Beehiiv send tailored to a cold/lapsed audience — different from what they're already getting from Agnes",
-      "Compare open/click/gift performance between the Beehiiv segment and Agnes's regular send over the same period",
-      "Use results to decide whether to expand segmentation to more of the list"
+      "Meet with Tracy to review what Zeffy can export and segment by",
+      "Identify and export the first 500 of your ~10,000 least-active subscribers",
+      "Note what else Zeffy can segment by, for later — donors, members, ticket buyers"
     ],
     resources: []
   },
   {
-    title: "Tag the rest of the list by relationship, starting with your top 500",
+    title: "Understand what Beehiiv actually is, and why we're testing it",
     aiOrHuman: 'human',
-    description: "Beyond the bottom-500 test, the broader list still benefits from tagging by relationship — ticket buyer, member, donor — so future sends (Step 4) can speak to each group differently.",
-    whyItMatters: "Once the bottom-500 test proves out segmentation, having the rest of the list already tagged means Step 4's three-track newsletter split can launch without a second scramble to organize contacts.",
+    description: "Before anything goes out, we walk through what Beehiiv does, how it's different from Zeffy, and exactly what will and won't change for your subscribers.",
+    whyItMatters: "You should never feel like a tool is doing something to your list without understanding it first. This is a plain-language walkthrough, not a sales pitch.",
     actionItems: [
-      "Identify your top 500 most-engaged contacts (opens, clicks, or known transaction history)",
-      "Tag each as: never-visited, past-visitor/non-member, or donor/member",
-      "Note this is manual for now"
+      "Explain what Beehiiv is being used for — just this one test, not a replacement for Zeffy",
+      "Confirm exactly which 500 contacts will receive it and why",
+      "Answer any questions before a single email goes out"
     ],
     resources: []
   },
   {
-    title: "Launch the animal-art donation contest as your CRM on-ramp",
+    title: "Send one test newsletter to the first 500, and only those 500",
     aiOrHuman: 'ai',
-    description: "Run the kids'-art-per-enclosure voting contest with $1+ votes, but capture an email and a \"contest voter\" tag for every participant.",
-    whyItMatters: "This does double duty — it's a fundraiser on its own, and it's the fastest, lowest-friction way to keep growing the segmented contact list Step 2 started. Automating vote-tally and receipt emails means no one has to track entries by hand.",
+    description: "A single, low-stakes test to see how tone and format land with your least-active contacts — without touching your regular Zeffy newsletter or your main list.",
+    whyItMatters: "This is a look/feel/voice test, not a strategy change. Your regular newsletter through Zeffy keeps going exactly as it always has, to everyone.",
     actionItems: [
-      "Set up the voting mechanic (one entry = one enclosure/animal, $1+ per vote)",
-      "Require email capture at the point of voting",
-      "Tag every voter as \"contest voter\" in your list",
-      "Automate the vote-tally and receipt emails so this doesn't need manual tracking"
+      "Draft one test send using AI, in your voice, based on your existing newsletter content",
+      "You review and approve it before it sends",
+      "Send only to the 500-contact test group",
+      "Review open and click results together afterward"
     ],
     resources: []
   },
   {
-    title: "Split the monthly newsletter into three tracks",
-    aiOrHuman: 'ai',
-    description: "Never-visited (ticket-focused), past-visitor/non-member (membership + gift certificate), and donor/member (recurring gift + volunteer).",
-    whyItMatters: "Even basic segmentation, drafted with AI assistance from your existing email history, typically lifts click-through and gift size more than any redesign of the email itself. This is the direct payoff of Step 2's tagging work.",
-    actionItems: [
-      "Draft three email variants using AI, one per audience track",
-      "Never-visited track: lead with a ticket-purchase CTA",
-      "Past-visitor/non-member track: lead with membership or gift-certificate CTA",
-      "Donor/member track: lead with recurring-gift and volunteer CTA",
-      "Send using the tags from Step 2, and add new tags as Step 3's contest brings in more contacts"
-    ],
-    resources: []
-  },
-  {
-    title: "Stand up the print-on-demand store as your automation proof-of-concept",
-    aiOrHuman: 'ai',
-    description: "Connect contest-winning art to a Printful/Printify storefront with zero inventory risk, and automate the full pipeline end to end.",
-    whyItMatters: "This becomes your internal case study — a working, mostly-hands-off revenue channel you can point to when deciding what to automate next. It's the strategic move once Steps 1 through 3 are running.",
-    actionItems: [
-      "Connect Printful or Printify to a simple storefront",
-      "Automate: winning design → mockup generation → store listing → fulfillment",
-      "Launch using the contest winner's art from Step 3 as the first product",
-      "Use this as your reference point for what to automate next"
-    ],
-    resources: []
-  },
-  {
-    title: "Reconcile inconsistent numbers and branding across your two sites",
+    title: "Keep sending your regular newsletter through Zeffy — no changes",
     aiOrHuman: 'human',
-    description: "alpineacressanctuaryfarm.org and childrensnatureretreat.org quote different animal counts (200 / 210+ / 250+) and different founding language.",
-    whyItMatters: "Both sites point to the same nonprofit, so the inconsistency undercuts SEO and donor trust. Worth fixing before scaling any campaign that drives traffic to either site — this is a quick, one-time cleanup, not an ongoing project.",
+    description: "Everything you're already doing stays exactly the same. This test runs alongside it, not instead of it.",
+    whyItMatters: "Nothing here requires you to change platforms, stop what's working, or hand over more control than you're ready for.",
     actionItems: [
-      "Pick one authoritative animal count and founding story",
-      "Update both sites to match",
-      "Check any print materials or social bios for the same inconsistency"
+      "No action needed on your end — this is just confirming nothing changes here"
     ],
     resources: []
   },
   {
-    title: "Restart the blog with an AI-assisted content pipeline",
-    aiOrHuman: 'ai',
-    description: "The blog has been silent since April 2023 — roughly three years of dormant SEO and no repeatable content pipeline.",
-    whyItMatters: "This is the easiest item on the list for AI to help with directly. Raw material you already generate — animal updates, contest results, volunteer stories — can become scheduled posts and newsletter content without adding staff time.",
+    title: "Everything else stays on pause until you're ready",
+    aiOrHuman: 'human',
+    description: "We have a much bigger set of ideas — segmenting your other valuable contacts, more content, and more — but none of it moves forward until you've seen how this first test goes and want to talk through more.",
+    whyItMatters: "This whole plan is designed to go at your pace. Nothing gets expanded or automated without you in the room deciding it should.",
     actionItems: [
-      "Identify recurring content you already produce informally (animal updates, contest results, volunteer stories)",
-      "Use AI to draft posts from that raw material on a set cadence",
-      "Cross-post into the newsletter tracks from Step 4"
+      "Revisit the fuller roadmap together once the 500-contact test results are in",
+      "Only add new steps here after you've reviewed and agreed to them"
     ],
     resources: []
+  }
+];
+
+// Bigger ideas Agnes has already seen in the walkthrough and gotten excited
+// about. These are deliberately NOT in the PLAN array above — no checkbox,
+// no progress tracking — because none of them are commitments yet. Purely
+// here so she can open one when curious. Move an idea into PLAN above only
+// after she's actually agreed to it.
+const FUTURE_IDEAS = [
+  {
+    title: "A kids'-art donation contest, one entry per animal",
+    blurb: "Kids submit art for their favorite enclosure, the public votes with a $1+ donation per vote.",
+    details: "This does double duty — it's a small fundraiser on its own, and every voter who enters gives an email address, which slowly builds exactly the kind of engaged list your regular newsletter doesn't reach today.",
+    previewItems: [
+      "One entry per enclosure or animal",
+      "Voting requires an email and a small donation per vote",
+      "Vote tallies and receipts can send automatically, no manual tracking"
+    ]
+  },
+  {
+    title: "A simple shop selling the winning contest art",
+    blurb: "Turn the contest winner's artwork into shirts, mugs, or prints — with zero inventory risk to you.",
+    details: "Print-on-demand services print and ship one item at a time, so nothing gets bought or stored upfront. It's a small, low-risk way to see if merchandise is worth doing more of.",
+    previewItems: [
+      "Connect a print-on-demand service (no inventory to manage)",
+      "Winning contest art becomes the first product",
+      "Everything from listing to shipping happens automatically"
+    ]
+  },
+  {
+    title: "Turning one phone video into a month of social content",
+    blurb: "A single 5-minute walking tour, recorded on your phone, becomes weeks of posts.",
+    details: "Rather than trying to post constantly, one good recording session gets broken into many smaller clips over time — so the farm has a steady social presence without needing new footage every week.",
+    previewItems: [
+      "One phone-recorded farm tour as the raw material",
+      "Cut into a month of shorter posts",
+      "You'd approve a batch at a time before anything goes out"
+    ]
+  },
+  {
+    title: "An automated weekly scan for grant funding",
+    blurb: "A tool that quietly checks grant databases every week and flags ones worth applying to.",
+    details: "Grant research is time-consuming and easy to let slip. This would scan on a schedule and surface a short list, so applying becomes a once-you're-ready decision instead of a from-scratch research project each time.",
+    previewItems: [
+      "Weekly automated scan of grant databases",
+      "Each opportunity scored by fit, deadline, and value",
+      "You'd only see a short, relevant list — not raw search results"
+    ]
+  },
+  {
+    title: "Corporate sponsorship tiers",
+    blurb: "A simple, tiered sponsorship offer for local businesses — named animal sponsorships, signage, and more.",
+    details: "Right now sponsorship likely happens ad hoc. A clear tiered offer (with set pricing and set benefits) makes it much easier to pitch, and easier for a business to say yes to.",
+    previewItems: [
+      "A one-page sponsorship deck with clear pricing tiers",
+      "Each tier bundles specific, concrete benefits",
+      "A short list of realistic local businesses to approach first"
+    ]
+  },
+  {
+    title: "Restarting the blog with a repeatable content pipeline",
+    blurb: "Turn the updates you already share informally into scheduled blog posts.",
+    details: "The blog's been quiet for a while, which means lost search visibility. Rather than a big new writing burden, this would turn material you're already generating — animal updates, visitor stories — into steady posts.",
+    previewItems: [
+      "Identify what you already share informally that could become a post",
+      "Draft posts from that material on a set schedule",
+      "Cross-post the same material into your newsletter"
+    ]
   }
 ];
 
 /* =========================================================================
    NO NEED TO EDIT BELOW THIS LINE
    ========================================================================= */
+
+let ideaExpanded = {};
+function toggleIdea(i){ ideaExpanded[i] = !ideaExpanded[i]; renderIdeas(); }
+
+function renderIdeas(){
+  const list = document.getElementById('ideasList');
+  if(!list) return;
+  list.innerHTML = FUTURE_IDEAS.map((idea, i) => `
+    <div class="idea ${ideaExpanded[i] ? 'expanded' : ''}" id="idea-${i}">
+      <div class="idea-head" onclick="toggleIdea(${i})">
+        <div class="idea-plus">+</div>
+        <div>
+          <div class="idea-title">${idea.title}</div>
+          <div class="idea-blurb">${idea.blurb}</div>
+        </div>
+      </div>
+      <div class="idea-detail">
+        <div class="detail-body">${idea.details}</div>
+        <ul class="idea-preview">
+          ${idea.previewItems.map(p => `<li>${p}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* =========================================================================
+   FULL 90-DAY ROADMAP — the fuller strategy, organized by phase. Kept
+   separate from the confirmed steps' progress bar on purpose: checking
+   things off here is just personal tracking/curiosity, not a commitment.
+   ========================================================================= */
+const ROADMAP = [
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Zeffy export and full list segmentation", aiOrHuman: 'human',
+    description: "Pull every list out of Zeffy and build the full cross-reference the rest of this depends on.",
+    actionItems: ["Pull all-subscribers, donor, and visitor lists from Zeffy", "Build a cross-reference spreadsheet", "Identify the full least-engaged segment beyond the first 500", "Identify visited-but-not-donated and donor/member segments"] },
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Beehiiv setup beyond the test group", aiOrHuman: 'human',
+    description: "If the 500-contact test lands well, stand up Beehiiv properly for the full least-engaged segment.",
+    actionItems: ["Configure custom domain and brand colors", "Set up saved content-block templates", "Turn on the public newsletter archive for SEO", "Build a welcome sequence for new subscribers"] },
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Voice-to-newsletter pipeline", aiOrHuman: 'ai',
+    description: "The centerpiece idea: you record a voice note, the system drafts the newsletter for your review.",
+    actionItems: ["Set up a dedicated recording method (voice note or short video)", "Build the pipeline: recording → transcript → drafted sections", "Test on past newsletters before ever connecting it live", "You approve every draft before anything sends — always"] },
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early-mid", title: "Content library from your stories", aiOrHuman: 'human',
+    description: "A couple of recording sessions, in your own words, that feed newsletter and social content for months.",
+    actionItems: ["Record the animal stories you already tell visitors, in your words", "Record a short farm-walking video for future use", "Transcribe both so they're ready to draw from later"] },
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid", title: "Blog scheduling and SEO recovery", aiOrHuman: 'human',
+    description: "Fix the batch-posting habit and start recovering lost search traffic.",
+    actionItems: ["Get publishing-schedule access from your web team", "Spread posts to roughly one per week going forward", "Write a few personal animal-story posts from recorded content", "Add a newsletter signup link to every blog post"] },
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid-late", title: "Brand kit and sponsorship deck", aiOrHuman: 'human',
+    description: "Lock the visual standards and put together a real, tiered sponsorship offer.",
+    actionItems: ["Finalize brand colors and typography from your existing logo", "Build a one-page sponsorship deck with clear pricing tiers", "Put together a realistic list of local businesses to approach"] },
+
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early", title: "First full AI-assisted newsletter", aiOrHuman: 'human',
+    description: "Once you've approved the approach, send the first real AI-assisted issue to the wider group.",
+    actionItems: ["Review everything built so far together", "Approve the templates and setup", "Record your first real voice note for a live issue", "Review the draft and approve before it sends"] },
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early-mid", title: "A small giving campaign, if you want one", aiOrHuman: 'ai',
+    description: "A short, scheduled series of asks — only if and when you're comfortable running one.",
+    actionItems: ["Draft a short 2-3 email giving series for your review", "You approve each one individually before anything sends", "Track results together afterward"] },
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid", title: "Social content from one recording session", aiOrHuman: 'ai',
+    description: "Turn one phone-recorded farm tour into weeks of social posts.",
+    actionItems: ["Record a short walking farm tour on your phone", "Produce a batch of posts from that single recording", "You approve a batch at a time before it's scheduled"] },
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid-late", title: "Corporate sponsor outreach", aiOrHuman: 'human',
+    description: "Warm intros and direct outreach using the sponsorship deck from Phase 1.",
+    actionItems: ["Warm introductions through existing relationships", "Direct outreach to a targeted local business list", "A simple follow-up sequence over a few weeks"] },
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Late", title: "Public visibility push", aiOrHuman: 'human',
+    description: "Rotary talks, local press, and camp-season visibility, timed to when it's useful.",
+    actionItems: ["A short talk prepared for local community groups", "A press pitch built around a real, specific story", "Feature camp or visit booking prominently online"] },
+
+  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Early", title: "Look at what's actually working", aiOrHuman: 'ai',
+    description: "Review real numbers across every channel before deciding what to expand.",
+    actionItems: ["Compare open/click results across everything sent so far", "Identify which stories and animals drive the most engagement", "Decide together what to double down on and what to drop"] },
+  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Mid", title: "Grant research, automated", aiOrHuman: 'ai',
+    description: "A weekly scan for grant funding that fits your farm's specific needs.",
+    actionItems: ["Set up a weekly automated scan of grant databases", "Score opportunities by fit, deadline, and value", "Draft narrative sections in your own words from past recordings"] },
+  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Mid-late", title: "A paid newsletter tier, if it fits", aiOrHuman: 'ai',
+    description: "An optional behind-the-scenes tier for your most engaged supporters — only if it feels right.",
+    actionItems: ["Confirm the free newsletter is running smoothly first", "Decide together whether a paid tier makes sense for your audience", "If yes, keep it simple to start"] },
+  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Late", title: "Handoff and results review", aiOrHuman: 'human',
+    description: "Make sure your team can run everything without us, and look back at what it actually did.",
+    actionItems: ["Document how everything works so your team can run it", "Train whoever will own the ongoing approval process", "Look back together at what changed — time saved, engagement, donations", "Set up an ongoing monthly check-in, on your schedule"] },
+];
+
+let roadmapStepDone = {};
+let roadmapSubDone = {};
+let roadmapExpanded = {};
+
+function roadmapKey(){ return 'elevate-roadmap-' + CLIENT.slug; }
+function loadRoadmapState(){
+  try{
+    const raw = localStorage.getItem(roadmapKey());
+    if(!raw) return;
+    const state = JSON.parse(raw);
+    roadmapStepDone = state.stepDone || {};
+    roadmapSubDone = state.subDone || {};
+  }catch(e){ /* ignore, start fresh */ }
+}
+function saveRoadmapState(){
+  try{
+    localStorage.setItem(roadmapKey(), JSON.stringify({ stepDone: roadmapStepDone, subDone: roadmapSubDone }));
+  }catch(e){ /* ignore */ }
+}
+
+function toggleRoadmapStep(i){ roadmapStepDone[i] = !roadmapStepDone[i]; renderRoadmap(); saveRoadmapState(); }
+function toggleRoadmapSub(i, ai){ const k = i+'-'+ai; roadmapSubDone[k] = !roadmapSubDone[k]; renderRoadmap(); saveRoadmapState(); }
+function toggleRoadmapExpand(i){ roadmapExpanded[i] = !roadmapExpanded[i]; renderRoadmap(); }
+
+function renderRoadmap(){
+  const container = document.getElementById('roadmapList');
+  if(!container) return;
+  let html = '';
+  let currentPhase = 0;
+  ROADMAP.forEach((step, i) => {
+    if(step.phase !== currentPhase){
+      currentPhase = step.phase;
+      html += `<div class="phase-header"><span class="num">${String(currentPhase).padStart(2,'0')}</span><span class="t">${step.phaseTitle}</span><span class="days">${step.days}</span></div>`;
+    }
+    const isDone = !!roadmapStepDone[i];
+    const isExpanded = !!roadmapExpanded[i];
+    html += `
+    <div class="step ${isDone ? 'done' : ''} ${isExpanded ? 'expanded' : ''}" id="roadmap-step-${i}">
+      <div class="step-head" onclick="toggleRoadmapExpand(${i})">
+        <button class="step-check" onclick="event.stopPropagation(); toggleRoadmapStep(${i});">${isDone ? '✓' : ''}</button>
+        <div class="step-body-wrap">
+          <div class="step-title-row">
+            <div class="step-title">${step.title}</div>
+            <span class="tag tag-days">${step.dayRange}</span>
+            <span class="tag ${step.aiOrHuman === 'ai' ? 'tag-ai' : 'tag-human'}">${step.aiOrHuman === 'ai' ? 'AI-assisted' : 'Human-led'}</span>
+          </div>
+          <div class="step-desc">${step.description}</div>
+        </div>
+        <div class="step-toggle-icon">▼</div>
+      </div>
+      <div class="step-detail">
+        <ul class="action-list">
+          ${step.actionItems.map((a, ai) => {
+            const done = !!roadmapSubDone[i+'-'+ai];
+            return `<li class="action-item ${done ? 'sub-done' : ''}" onclick="event.stopPropagation(); toggleRoadmapSub(${i}, ${ai});">
+              <span class="sub-check">${done ? '✓' : ''}</span><span class="sub-text">${a}</span>
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
 
 function getParams(){
   const p = new URLSearchParams(window.location.search);
@@ -354,13 +585,16 @@ function render(){
   `).join('');
 }
 render();
+renderIdeas();
+loadRoadmapState();
+renderRoadmap();
 
 /* =========================================================================
    CHAT WIDGET — "Talk it through"
    EDIT: put the real inbox this should go to when someone clicks
    "Email this to your advisor" below.
    ========================================================================= */
-const ADVISOR_EMAIL = 'admin@elevatemy.ai'; // <-- EDIT THIS
+const ADVISOR_EMAIL = 'CHANGE-ME@elevatemy.ai'; // <-- EDIT THIS
 
 let chatHistory = [];
 
@@ -412,6 +646,54 @@ document.getElementById('chatSend').addEventListener('click', sendChat);
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
   if(e.key === 'Enter') sendChat();
 });
+
+/* =========================================================================
+   VOICE INPUT — lets Agnes talk instead of type.
+   Only appears where the browser supports it (Android Chrome, desktop
+   Chrome/Edge). On iPhone, this button won't show — but iOS's own
+   keyboard already has a microphone icon built in for any text field,
+   so voice input still works there without any extra code.
+   ========================================================================= */
+(function(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('chatMic');
+  if(!SpeechRecognition || !micBtn) return; // not supported here — nothing to wire up
+
+  micBtn.style.display = 'inline-flex';
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  let listening = false;
+
+  micBtn.addEventListener('click', () => {
+    if(listening) return;
+    listening = true;
+    micBtn.classList.add('listening');
+    micBtn.textContent = '●';
+    try{ recognition.start(); }catch(e){ /* already running, ignore */ }
+  });
+
+  recognition.addEventListener('result', (e) => {
+    const transcript = e.results[0][0].transcript;
+    const input = document.getElementById('chatInput');
+    input.value = input.value ? (input.value.trim() + ' ' + transcript) : transcript;
+    input.focus();
+  });
+
+  recognition.addEventListener('end', () => {
+    listening = false;
+    micBtn.classList.remove('listening');
+    micBtn.textContent = '🎤';
+  });
+
+  recognition.addEventListener('error', () => {
+    listening = false;
+    micBtn.classList.remove('listening');
+    micBtn.textContent = '🎤';
+  });
+})();
 
 document.getElementById('chatDownload').addEventListener('click', () => {
   const text = chatHistory.map(m => (m.role === 'user' ? 'Agnes: ' : 'Assistant: ') + m.content).join('\n\n');
