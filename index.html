@@ -142,11 +142,51 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .phase-header .days{font-size:10.5px;color:var(--sand);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
 .tag-days{background:var(--cream-dark);color:var(--sand);}
 
+/* WINS SO FAR — only shows stats that actually have real numbers behind
+   them. Never fabricate a number to fill this out. */
+.wins-card{margin-top:1.4rem;background:linear-gradient(135deg, var(--teal-pale) 0%, var(--white) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.6rem;}
+.wins-title{font-family:var(--d);font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:1rem;}
+.wins-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:1rem;}
+.wins-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.9rem 1rem;}
+.wins-num{font-family:var(--d);font-size:1.5rem;font-weight:700;color:var(--teal);line-height:1.1;margin-bottom:0.25rem;}
+.wins-label{font-size:11.5px;color:var(--text-muted);line-height:1.4;}
+
+/* HILL-CLIMB DASHBOARD — the "elevate" visual: overall progress across
+   everything (near-term steps + all three roadmap phases), shown as a
+   climb with checkpoints. The short progress bar above stays focused on
+   just the near-term steps; this is the bigger picture. */
+.dashboard-card{margin-top:1.1rem;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.6rem;}
+.dashboard-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.dashboard-title{font-family:var(--d);font-size:0.95rem;font-weight:700;color:var(--navy);}
+.dashboard-pct{font-family:var(--d);font-size:1.2rem;font-weight:700;color:var(--teal);}
+.dashboard-chevron{font-size:11px;color:var(--sand);transition:transform 0.2s;}
+.dashboard-card.collapsed .dashboard-chevron{transform:rotate(180deg);}
+.dashboard-body{max-height:400px;overflow:hidden;transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;opacity:1;margin-top:0.6rem;}
+.dashboard-card.collapsed .dashboard-body{max-height:0;opacity:0;margin-top:0;}
+.hill-svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto 0.7rem;}
+.chapter-legend{display:grid;grid-template-columns:repeat(4, 1fr);gap:0.5rem;}
+.chapter-item{text-align:center;padding:0.55rem 0.3rem;border-radius:8px;transition:background 0.2s;}
+.chapter-item.current{background:var(--teal-pale);}
+.chapter-name{font-size:10px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;color:var(--sand);margin-bottom:0.25rem;line-height:1.3;}
+.chapter-item.current .chapter-name{color:var(--navy);}
+.chapter-frac{font-family:var(--d);font-size:1.05rem;font-weight:700;color:var(--text-dark);}
+.chapter-item.chapter-done .chapter-frac{color:var(--teal);}
+
+@keyframes shake-incomplete{
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.shake-incomplete{ animation: shake-incomplete 0.4s ease; border-color: var(--teal-light) !important; }
+
 @media(max-width:640px){
   .wrap{padding:2rem 1.25rem 4rem;}
   .step-detail{padding-left:1.4rem;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -167,6 +207,33 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
       <div class="progress-count" id="progressCount">0 of 0 complete</div>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+  </div>
+
+  <div class="dashboard-card" id="dashboardCard">
+    <div class="dashboard-top" onclick="toggleDashboardCollapse()">
+      <div class="dashboard-title">Your climb 🏔️</div>
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <div class="dashboard-pct" id="summitPct">0%</div>
+        <div class="dashboard-chevron" id="dashboardChevron">▲</div>
+      </div>
+    </div>
+    <div class="dashboard-body" id="dashboardBody">
+      <svg class="hill-svg" viewBox="0 -30 700 175" preserveAspectRatio="xMidYMid meet">
+        <path id="hillPath" d="M 25 135 C 150 135, 160 100, 260 88 C 370 76, 390 45, 500 37 C 570 31, 600 17, 665 10"
+              fill="none" stroke="var(--border)" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="25" cy="135" r="6" fill="var(--white)" stroke="var(--border)" stroke-width="3"/>
+        <circle cx="260" cy="88" r="6" fill="var(--white)" stroke="var(--border)" stroke-width="3"/>
+        <circle cx="500" cy="37" r="6" fill="var(--white)" stroke="var(--border)" stroke-width="3"/>
+        <circle cx="665" cy="10" r="6" fill="var(--white)" stroke="var(--border)" stroke-width="3"/>
+        <line x1="665" y1="10" x2="665" y2="-20" stroke="var(--sand)" stroke-width="2"/>
+        <text x="672" y="-14" text-anchor="start" font-size="16">🚩</text>
+        <g id="climberMarker">
+          <circle r="10" fill="var(--teal)"/>
+          <text x="0" y="4" text-anchor="middle" font-size="12">🥾</text>
+        </g>
+      </svg>
+      <div class="chapter-legend" id="chapterLegend"></div>
+    </div>
   </div>
 
   <div class="section-label">Your action steps</div>
@@ -216,6 +283,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     </div>
   </div>
 
+  <div class="wins-card" id="winsCard" style="display:none;">
+    <div class="wins-title">🌱 Wins so far</div>
+    <div class="wins-grid" id="winsGrid"></div>
+  </div>
+
   <div class="powered-by">Powered by <a href="https://www.cwmsd.com/ai-consult-elevatemy.ai" target="_blank">elevatemy.ai</a></div>
 </div>
 
@@ -230,6 +302,17 @@ const CLIENT = {
   businessName: 'Alpine Acres Sanctuary Farm',
   subhead: "We're starting small and slow, on your terms. Nothing here happens without you seeing it first, and nothing about how you already run things changes unless you decide it should.",
   bookingUrl: 'https://meetings.hubspot.com/matt-barnhart/eai-meeting'
+};
+
+// EDIT THESE AS THINGS CHANGE — this powers the "Wins so far" section.
+// Leave any value as null if you don't have a real number yet; that stat
+// just won't show up until you fill it in. Never show a fake number here.
+const STATS = {
+  startDate: '2026-07-14',        // the day this page first went live
+  subscribersStart: 19044,        // her list size when we started
+  subscribersNow: null,           // update once you have a newer count
+  openRateStart: null,            // e.g. '18%' — fill in once known
+  openRateNow: null               // e.g. '24%' — fill in once known
 };
 
 const PLAN = [
@@ -365,8 +448,197 @@ const FUTURE_IDEAS = [
    NO NEED TO EDIT BELOW THIS LINE
    ========================================================================= */
 
+/* Small celebration burst whenever something gets marked complete.
+   intensity scales the effect down for smaller wins (sub-items) vs
+   bigger ones (a whole confirmed step). Fails silently if the confetti
+   library didn't load (e.g. offline), so it never breaks the page.
+   useWorker is explicitly off — some sandboxed/preview environments block
+   the blob-based worker the library tries by default, which otherwise
+   throws a harmless-but-noisy console warning. Main-thread rendering is
+   plenty fast for a burst this small. */
+let confettiInstance = null;
+function getConfettiInstance(){
+  if(confettiInstance) return confettiInstance;
+  if(typeof confetti !== 'function' || typeof confetti.create !== 'function') return null;
+  try{
+    const canvasEl = document.createElement('canvas');
+    canvasEl.style.position = 'fixed';
+    canvasEl.style.inset = '0';
+    canvasEl.style.width = '100%';
+    canvasEl.style.height = '100%';
+    canvasEl.style.pointerEvents = 'none';
+    canvasEl.style.zIndex = '9999';
+    document.body.appendChild(canvasEl);
+    confettiInstance = confetti.create(canvasEl, { resize: true, useWorker: false });
+  }catch(e){ return null; }
+  return confettiInstance;
+}
+
+/* Small visual nudge when someone tries to complete a step before its
+   sub-items are checked off — briefly shakes the card instead of silently
+   doing nothing, so it's clear why the checkbox didn't respond. */
+function flashIncomplete(elementId){
+  setTimeout(() => {
+    const el = document.getElementById(elementId);
+    if(!el) return;
+    el.classList.add('shake-incomplete');
+    setTimeout(() => el.classList.remove('shake-incomplete'), 500);
+  }, 30); // small delay so the expand/render above finishes first
+}
+
+function celebrate(intensity){
+  intensity = intensity || 1;
+  const fire = getConfettiInstance();
+  if(!fire) return;
+  try{
+    fire({
+      particleCount: Math.round(60 * intensity),
+      spread: 65,
+      startVelocity: 35,
+      origin: { y: 0.7 },
+      colors: ['#2F4D3A', '#C1652F', '#6B8F68', '#E9F0E6']
+    });
+  }catch(e){ /* ignore — never let a visual flourish break the page */ }
+}
+
 let ideaExpanded = {};
 function toggleIdea(i){ ideaExpanded[i] = !ideaExpanded[i]; renderIdeas(); }
+
+/* Counts how many messages Agnes has sent through "Talk it through" —
+   a genuine, automatically-tracked number, unlike the manual STATS above. */
+function ideaCountKey(){ return 'elevate-idea-count-' + CLIENT.slug; }
+function getIdeaCount(){
+  try{ return parseInt(localStorage.getItem(ideaCountKey()) || '0', 10); }catch(e){ return 0; }
+}
+function incrementIdeaCount(){
+  try{
+    const next = getIdeaCount() + 1;
+    localStorage.setItem(ideaCountKey(), String(next));
+    return next;
+  }catch(e){ return getIdeaCount(); }
+}
+
+function daysSince(dateStr){
+  if(!dateStr) return null;
+  const start = new Date(dateStr);
+  if(isNaN(start.getTime())) return null;
+  const diffMs = Date.now() - start.getTime();
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function renderWins(){
+  const card = document.getElementById('winsCard');
+  const grid = document.getElementById('winsGrid');
+  if(!card || !grid) return;
+
+  const stats = [];
+
+  const days = daysSince(STATS.startDate);
+  if(days !== null){
+    stats.push({ num: days, label: days === 1 ? 'day working together' : 'days working together' });
+  }
+
+  if(STATS.subscribersStart !== null && STATS.subscribersNow !== null){
+    const delta = STATS.subscribersNow - STATS.subscribersStart;
+    const sign = delta > 0 ? '+' : '';
+    stats.push({ num: `${sign}${delta.toLocaleString()}`, label: `subscribers since we started (${STATS.subscribersStart.toLocaleString()} → ${STATS.subscribersNow.toLocaleString()})` });
+  } else if(STATS.subscribersStart !== null){
+    stats.push({ num: STATS.subscribersStart.toLocaleString(), label: 'subscribers when we started' });
+  }
+
+  if(STATS.openRateStart !== null && STATS.openRateNow !== null){
+    stats.push({ num: STATS.openRateNow, label: `open rate now (started at ${STATS.openRateStart})` });
+  }
+
+  const ideaCount = getIdeaCount();
+  if(ideaCount > 0){
+    stats.push({ num: ideaCount, label: ideaCount === 1 ? 'idea shared with us via chat' : 'ideas shared with us via chat' });
+  }
+
+  if(stats.length === 0){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  grid.innerHTML = stats.map(s => `
+    <div class="wins-stat">
+      <div class="wins-num">${s.num}</div>
+      <div class="wins-label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+/* Splits everything trackable into 4 "chapters" for the hill-climb view:
+   the near-term confirmed steps, then the roadmap's three phases. Pulls
+   live from the same state (progress/roadmapStepDone) the rest of the
+   page already uses — nothing duplicated, just re-grouped for this view. */
+function getChapters(){
+  const ch1Done = PLAN.filter((_, i) => progress[i]).length;
+  const ch1Total = PLAN.length;
+
+  const byPhase = (phaseNum) => ROADMAP
+    .map((step, i) => ({ i, phase: step.phase }))
+    .filter(s => s.phase === phaseNum);
+
+  const doneIn = (items) => items.filter(s => roadmapStepDone[s.i]).length;
+
+  const phase1 = byPhase(1), phase2 = byPhase(2), phase3 = byPhase(3);
+
+  return [
+    { label: 'Getting Started', done: ch1Done, total: ch1Total },
+    { label: 'Foundation', done: doneIn(phase1), total: phase1.length },
+    { label: 'Launch', done: doneIn(phase2), total: phase2.length },
+    { label: 'Elevate', done: doneIn(phase3), total: phase3.length }
+  ];
+}
+
+function dashboardCollapseKey(){ return 'elevate-dashboard-collapsed-' + CLIENT.slug; }
+function toggleDashboardCollapse(){
+  const card = document.getElementById('dashboardCard');
+  if(!card) return;
+  const nowCollapsed = !card.classList.contains('collapsed');
+  card.classList.toggle('collapsed', nowCollapsed);
+  try{ localStorage.setItem(dashboardCollapseKey(), nowCollapsed ? '1' : '0'); }catch(e){}
+}
+function applySavedDashboardCollapseState(){
+  const card = document.getElementById('dashboardCard');
+  if(!card) return;
+  let saved = null;
+  try{ saved = localStorage.getItem(dashboardCollapseKey()); }catch(e){}
+  if(saved === '1') card.classList.add('collapsed');
+}
+
+function renderDashboard(){
+  const chapters = getChapters();
+  const totalDone = chapters.reduce((sum, c) => sum + c.done, 0);
+  const totalAll = chapters.reduce((sum, c) => sum + c.total, 0);
+  const pct = totalAll ? (totalDone / totalAll) : 0;
+
+  const pctEl = document.getElementById('summitPct');
+  if(pctEl) pctEl.textContent = Math.round(pct * 100) + '%';
+
+  const path = document.getElementById('hillPath');
+  const marker = document.getElementById('climberMarker');
+  if(path && marker){
+    try{
+      const len = path.getTotalLength();
+      const pt = path.getPointAtLength(len * pct);
+      marker.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+    }catch(e){ /* SVG not ready yet — skip positioning this render */ }
+  }
+
+  const legend = document.getElementById('chapterLegend');
+  if(legend){
+    let currentIdx = chapters.findIndex(c => c.total > 0 && c.done < c.total);
+    if(currentIdx === -1) currentIdx = chapters.length - 1;
+    legend.innerHTML = chapters.map((c, i) => `
+      <div class="chapter-item ${i === currentIdx ? 'current' : ''} ${c.total > 0 && c.done === c.total ? 'chapter-done' : ''}">
+        <div class="chapter-name">${c.label}</div>
+        <div class="chapter-frac">${c.done}/${c.total}</div>
+      </div>
+    `).join('');
+  }
+}
 
 function renderIdeas(){
   const list = document.getElementById('ideasList');
@@ -431,16 +703,16 @@ const ROADMAP = [
     description: "Rotary talks, local press, and camp-season visibility, timed to when it's useful.",
     actionItems: ["A short talk prepared for local community groups", "A press pitch built around a real, specific story", "Feature camp or visit booking prominently online"] },
 
-  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Early", title: "Look at what's actually working", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Early", title: "Look at what's actually working", aiOrHuman: 'ai',
     description: "Review real numbers across every channel before deciding what to expand.",
     actionItems: ["Compare open/click results across everything sent so far", "Identify which stories and animals drive the most engagement", "Decide together what to double down on and what to drop"] },
-  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Mid", title: "Grant research, automated", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid", title: "Grant research, automated", aiOrHuman: 'ai',
     description: "A weekly scan for grant funding that fits your farm's specific needs.",
     actionItems: ["Set up a weekly automated scan of grant databases", "Score opportunities by fit, deadline, and value", "Draft narrative sections in your own words from past recordings"] },
-  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Mid-late", title: "A paid newsletter tier, if it fits", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid-late", title: "A paid newsletter tier, if it fits", aiOrHuman: 'ai',
     description: "An optional behind-the-scenes tier for your most engaged supporters — only if it feels right.",
     actionItems: ["Confirm the free newsletter is running smoothly first", "Decide together whether a paid tier makes sense for your audience", "If yes, keep it simple to start"] },
-  { phase: 3, phaseTitle: "Optimize", days: "Once things are running and you want to refine", dayRange: "Late", title: "Handoff and results review", aiOrHuman: 'human',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Late", title: "Handoff and results review", aiOrHuman: 'human',
     description: "Make sure your team can run everything without us, and look back at what it actually did.",
     actionItems: ["Document how everything works so your team can run it", "Train whoever will own the ongoing approval process", "Look back together at what changed — time saved, engagement, donations", "Set up an ongoing monthly check-in, on your schedule"] },
 ];
@@ -465,8 +737,33 @@ function saveRoadmapState(){
   }catch(e){ /* ignore */ }
 }
 
-function toggleRoadmapStep(i){ roadmapStepDone[i] = !roadmapStepDone[i]; renderRoadmap(); saveRoadmapState(); }
-function toggleRoadmapSub(i, ai){ const k = i+'-'+ai; roadmapSubDone[k] = !roadmapSubDone[k]; renderRoadmap(); saveRoadmapState(); }
+function toggleRoadmapStep(i){
+  const wasNotDone = !roadmapStepDone[i];
+  if(wasNotDone){
+    const step = ROADMAP[i];
+    const subCount = step.actionItems ? step.actionItems.length : 0;
+    const allSubsDone = Array.from({length: subCount}, (_, ai) => !!roadmapSubDone[i+'-'+ai]).every(Boolean);
+    if(subCount > 0 && !allSubsDone){
+      roadmapExpanded[i] = true;
+      renderRoadmap();
+      flashIncomplete(`roadmap-step-${i}`);
+      return;
+    }
+  }
+  roadmapStepDone[i] = !roadmapStepDone[i];
+  renderRoadmap();
+  saveRoadmapState();
+  renderDashboard();
+  if(wasNotDone && roadmapStepDone[i]) celebrate(0.6);
+}
+function toggleRoadmapSub(i, ai){
+  const k = i+'-'+ai;
+  const wasNotDone = !roadmapSubDone[k];
+  roadmapSubDone[k] = !roadmapSubDone[k];
+  renderRoadmap();
+  saveRoadmapState();
+  if(wasNotDone && roadmapSubDone[k]) celebrate(0.4);
+}
 function toggleRoadmapExpand(i){ roadmapExpanded[i] = !roadmapExpanded[i]; renderRoadmap(); }
 
 function renderRoadmap(){
@@ -520,8 +817,28 @@ function loadProgress(){
 }
 function saveProgress(state){ try{ localStorage.setItem(storageKey(), JSON.stringify(state)); }catch(e){} }
 let progress = loadProgress();
+let stepExpanded = {};
 
-function toggleDone(i){ progress[i] = !progress[i]; saveProgress(progress); render(); }
+function toggleDone(i){
+  const wasNotDone = !progress[i];
+  if(wasNotDone){
+    // About to mark complete — check all sub-items are done first.
+    const step = PLAN[i];
+    const subCount = step.actionItems ? step.actionItems.length : 0;
+    const allSubsDone = Array.from({length: subCount}, (_, ai) => !!subProgress[i+'-'+ai]).every(Boolean);
+    if(subCount > 0 && !allSubsDone){
+      stepExpanded[i] = true; // open it up so they can see what's left
+      render();
+      flashIncomplete(`step-${i}`);
+      return;
+    }
+  }
+  progress[i] = !progress[i];
+  saveProgress(progress);
+  render();
+  renderDashboard();
+  if(wasNotDone && progress[i]) celebrate();
+}
 function subKey(){ return 'elevate-plan-sub-' + CLIENT.slug; }
 function loadSub(){
   try{ const raw = localStorage.getItem(subKey()); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
@@ -530,11 +847,13 @@ function saveSub(state){ try{ localStorage.setItem(subKey(), JSON.stringify(stat
 let subProgress = loadSub();
 function toggleSub(i, ai){
   const key = i + '-' + ai;
+  const wasNotDone = !subProgress[key];
   subProgress[key] = !subProgress[key];
   saveSub(subProgress);
   render();
+  if(wasNotDone && subProgress[key]) celebrate(0.5);
 }
-function toggleExpand(el){ el.classList.toggle('expanded'); }
+function toggleExpand(i){ stepExpanded[i] = !stepExpanded[i]; render(); }
 
 function render(){
   const params = getParams();
@@ -551,8 +870,8 @@ function render(){
 
   const list = document.getElementById('stepsList');
   list.innerHTML = PLAN.map((step, i) => `
-    <div class="step ${progress[i] ? 'done' : ''}" id="step-${i}">
-      <div class="step-head" onclick="toggleExpand(document.getElementById('step-${i}'))">
+    <div class="step ${progress[i] ? 'done' : ''} ${stepExpanded[i] ? 'expanded' : ''}" id="step-${i}">
+      <div class="step-head" onclick="toggleExpand(${i})">
         <button class="step-check" onclick="event.stopPropagation(); toggleDone(${i});">${progress[i] ? '✓' : ''}</button>
         <div class="step-body-wrap">
           <div class="step-title-row">
@@ -588,13 +907,16 @@ render();
 renderIdeas();
 loadRoadmapState();
 renderRoadmap();
+renderWins();
+applySavedDashboardCollapseState();
+renderDashboard();
 
 /* =========================================================================
    CHAT WIDGET — "Talk it through"
    EDIT: put the real inbox this should go to when someone clicks
    "Email this to your advisor" below.
    ========================================================================= */
-const ADVISOR_EMAIL = 'admin@elevatemy.ai'; // <-- EDIT THIS
+const ADVISOR_EMAIL = 'CHANGE-ME@elevatemy.ai'; // <-- EDIT THIS
 
 let chatHistory = [];
 
@@ -614,6 +936,8 @@ async function sendChat(){
   chatHistory.push({ role: 'user', content: text });
   renderChat();
   input.value = '';
+  incrementIdeaCount();
+  renderWins();
 
   const log = document.getElementById('chatLog');
   const thinking = document.createElement('div');
