@@ -181,6 +181,13 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 }
 .shake-incomplete{ animation: shake-incomplete 0.4s ease; border-color: var(--teal-light) !important; }
 
+.assignee-select{font-family:var(--b);font-size:11px;font-weight:600;color:var(--text-dark);background:var(--white);border:1px solid var(--border);border-left-width:4px;border-radius:6px;padding:2px 8px 2px 6px;cursor:pointer;}
+.assignee-select:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+.notes-input{width:100%;min-height:60px;padding:0.55rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:var(--b);font-size:12.5px;color:var(--text-dark);background:var(--cream);resize:vertical;line-height:1.5;}
+.notes-input:focus{outline:2px solid var(--teal);outline-offset:1px;}
+.notes-input::placeholder{color:var(--sand);}
+
 @media(max-width:640px){
   .wrap{padding:2rem 1.25rem 4rem;}
   .step-detail{padding-left:1.4rem;}
@@ -236,8 +243,26 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     </div>
   </div>
 
-  <div class="section-label">Your action steps</div>
+  <div class="section-label">Action steps</div>
   <div id="stepsList"></div>
+
+  <div class="chat-card">
+    <div class="chat-title">Talk it through</div>
+    <div class="chat-sub">
+      Tell us what's going on at the farm — an animal update, a visitor story, something coming up.
+      We'll turn it into newsletter content.
+    </div>
+    <div id="chatLog" class="chat-log"></div>
+    <div class="chat-input-row">
+      <input id="chatInput" type="text" placeholder="Type here..." />
+      <button id="chatMic" type="button" title="Tap to talk instead of typing" style="display:none;">🎤</button>
+      <button id="chatSend">Send</button>
+    </div>
+    <div class="chat-actions">
+      <button id="chatDownload">Download conversation</button>
+      <button id="chatEmail">Email this to your advisor</button>
+    </div>
+  </div>
 
   <div class="future-heading">
     <div class="section-label">Bigger ideas — for when you're ready</div>
@@ -263,24 +288,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     <div class="cta-title">Questions on any of these steps?</div>
     <div class="cta-body">Book time with your advisor to walk through progress, priorities, or anything that's unclear.</div>
     <a class="cta-btn" id="ctaLink" href="#" target="_blank">Book a check-in →</a>
-  </div>
-
-  <div class="chat-card">
-    <div class="chat-title">Talk it through</div>
-    <div class="chat-sub">
-      Tell us what's going on at the farm — an animal update, a visitor story, something coming up.
-      We'll turn it into newsletter content.
-    </div>
-    <div id="chatLog" class="chat-log"></div>
-    <div class="chat-input-row">
-      <input id="chatInput" type="text" placeholder="Type here..." />
-      <button id="chatMic" type="button" title="Tap to talk instead of typing" style="display:none;">🎤</button>
-      <button id="chatSend">Send</button>
-    </div>
-    <div class="chat-actions">
-      <button id="chatDownload">Download conversation</button>
-      <button id="chatEmail">Email this to your advisor</button>
-    </div>
   </div>
 
   <div class="wins-card" id="winsCard" style="display:none;">
@@ -592,6 +599,92 @@ function getChapters(){
   ];
 }
 
+/* =========================================================================
+   ASSIGNMENT — lets anyone mark who's handling a step: Tracy, Matt, or
+   Agnes. Applies to confirmed steps and roadmap steps (not Bigger Ideas,
+   since those aren't tasks yet). Persisted per-browser, same pattern as
+   everything else on this page.
+   ========================================================================= */
+const ASSIGNEES = ['Unassigned', 'Tracy', 'Matt', 'Agnes'];
+
+function assigneeColor(name){
+  switch(name){
+    case 'Tracy': return 'var(--teal)';
+    case 'Matt': return 'var(--amber)';
+    case 'Agnes': return 'var(--navy)';
+    default: return 'var(--border)';
+  }
+}
+
+function assigneeKey(){ return 'elevate-plan-assignee-' + CLIENT.slug; }
+let stepAssignee = {};
+function loadAssignees(){
+  try{ const raw = localStorage.getItem(assigneeKey()); stepAssignee = raw ? JSON.parse(raw) : {}; }catch(e){ stepAssignee = {}; }
+}
+function saveAssignees(){ try{ localStorage.setItem(assigneeKey(), JSON.stringify(stepAssignee)); }catch(e){} }
+function setAssignee(i, value){
+  stepAssignee[i] = value === 'Unassigned' ? '' : value;
+  saveAssignees();
+  render();
+}
+
+function roadmapAssigneeKey(){ return 'elevate-roadmap-assignee-' + CLIENT.slug; }
+let roadmapStepAssignee = {};
+function loadRoadmapAssignees(){
+  try{ const raw = localStorage.getItem(roadmapAssigneeKey()); roadmapStepAssignee = raw ? JSON.parse(raw) : {}; }catch(e){ roadmapStepAssignee = {}; }
+}
+function saveRoadmapAssignees(){ try{ localStorage.setItem(roadmapAssigneeKey(), JSON.stringify(roadmapStepAssignee)); }catch(e){} }
+function setRoadmapAssignee(i, value){
+  roadmapStepAssignee[i] = value === 'Unassigned' ? '' : value;
+  saveRoadmapAssignees();
+  renderRoadmap();
+}
+
+function assigneeSelectHtml(currentValue, onChangeCall){
+  const current = currentValue || 'Unassigned';
+  return `<select class="assignee-select" style="border-left-color:${assigneeColor(current)};" onclick="event.stopPropagation();" onchange="event.stopPropagation(); ${onChangeCall}">
+    ${ASSIGNEES.map(name => `<option value="${name}" ${current === name ? 'selected' : ''}>${name === 'Unassigned' ? 'Assign to...' : name}</option>`).join('')}
+  </select>`;
+}
+
+/* =========================================================================
+   NOTES — free-text status notes per step ("stalled," "waiting on X,"
+   etc.). Deliberately does NOT trigger a full re-render on every
+   keystroke — that would rebuild the whole list and kick focus out of
+   the textarea mid-sentence. Saves quietly in the background instead.
+   ========================================================================= */
+function escapeHtml(str){
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function notesKey(){ return 'elevate-plan-notes-' + CLIENT.slug; }
+let stepNotes = {};
+function loadNotes(){
+  try{ const raw = localStorage.getItem(notesKey()); stepNotes = raw ? JSON.parse(raw) : {}; }catch(e){ stepNotes = {}; }
+}
+let notesSaveTimeout;
+function updateStepNote(i, value){
+  stepNotes[i] = value;
+  clearTimeout(notesSaveTimeout);
+  notesSaveTimeout = setTimeout(() => {
+    try{ localStorage.setItem(notesKey(), JSON.stringify(stepNotes)); }catch(e){}
+  }, 400);
+}
+
+function roadmapNotesKey(){ return 'elevate-roadmap-notes-' + CLIENT.slug; }
+let roadmapStepNotes = {};
+function loadRoadmapNotes(){
+  try{ const raw = localStorage.getItem(roadmapNotesKey()); roadmapStepNotes = raw ? JSON.parse(raw) : {}; }catch(e){ roadmapStepNotes = {}; }
+}
+let roadmapNotesSaveTimeout;
+function updateRoadmapStepNote(i, value){
+  roadmapStepNotes[i] = value;
+  clearTimeout(roadmapNotesSaveTimeout);
+  roadmapNotesSaveTimeout = setTimeout(() => {
+    try{ localStorage.setItem(roadmapNotesKey(), JSON.stringify(roadmapStepNotes)); }catch(e){}
+  }, 400);
+}
+
 function dashboardCollapseKey(){ return 'elevate-dashboard-collapsed-' + CLIENT.slug; }
 function toggleDashboardCollapse(){
   const card = document.getElementById('dashboardCard');
@@ -787,6 +880,7 @@ function renderRoadmap(){
             <div class="step-title">${step.title}</div>
             <span class="tag tag-days">${step.dayRange}</span>
             <span class="tag ${step.aiOrHuman === 'ai' ? 'tag-ai' : 'tag-human'}">${step.aiOrHuman === 'ai' ? 'AI-assisted' : 'Human-led'}</span>
+            ${assigneeSelectHtml(roadmapStepAssignee[i], `setRoadmapAssignee(${i}, this.value)`)}
           </div>
           <div class="step-desc">${step.description}</div>
         </div>
@@ -801,6 +895,10 @@ function renderRoadmap(){
             </li>`;
           }).join('')}
         </ul>
+        <div class="detail-block" style="margin-top:0.9rem;">
+          <div class="detail-label">Notes — status, blockers, anything to flag</div>
+          <textarea class="notes-input" placeholder="e.g. On hold until the test group results are in..." oninput="updateRoadmapStepNote(${i}, this.value)">${escapeHtml(roadmapStepNotes[i])}</textarea>
+        </div>
       </div>
     </div>`;
   });
@@ -879,6 +977,7 @@ function render(){
             <span class="tag ${step.aiOrHuman === 'ai' ? 'tag-ai' : 'tag-human'}">
               ${step.aiOrHuman === 'ai' ? 'AI-assisted' : 'Human-led'}
             </span>
+            ${assigneeSelectHtml(stepAssignee[i], `setAssignee(${i}, this.value)`)}
           </div>
           <div class="step-desc">${step.description}</div>
         </div>
@@ -899,10 +998,18 @@ function render(){
           <div class="detail-label">Resources</div>
           ${step.resources.map(r => `<a class="resource-link" href="${r.url}" target="_blank">${r.label} →</a>`).join('')}
         </div>` : ''}
+        <div class="detail-block">
+          <div class="detail-label">Notes — status, blockers, anything to flag</div>
+          <textarea class="notes-input" placeholder="e.g. Waiting on Agnes's Zeffy export..." oninput="updateStepNote(${i}, this.value)">${escapeHtml(stepNotes[i])}</textarea>
+        </div>
       </div>
     </div>
   `).join('');
 }
+loadAssignees();
+loadRoadmapAssignees();
+loadNotes();
+loadRoadmapNotes();
 render();
 renderIdeas();
 loadRoadmapState();
@@ -916,7 +1023,7 @@ renderDashboard();
    EDIT: put the real inbox this should go to when someone clicks
    "Email this to your advisor" below.
    ========================================================================= */
-const ADVISOR_EMAIL = 'admin@elevatemy.ai'; // <-- EDIT THIS
+const ADVISOR_EMAIL = 'CHANGE-ME@elevatemy.ai'; // <-- EDIT THIS
 
 let chatHistory = [];
 
