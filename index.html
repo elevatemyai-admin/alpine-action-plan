@@ -66,6 +66,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .tag-ai{background:var(--teal-pale);color:#0F6E56;}
 .tag-human{background:#FAEEDA;color:#854F0B;}
 .step-desc{font-size:13px;font-weight:400;color:var(--text-muted);line-height:1.6;}
+
+.value-trade{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.5rem 0 0.6rem;}
+.value-chip{display:flex;align-items:center;gap:0.4rem;font-size:11.5px;font-weight:600;padding:0.3rem 0.65rem;border-radius:7px;line-height:1.3;}
+.value-give{background:var(--cream-dark);color:var(--text-muted);}
+.value-get{background:var(--teal-pale);color:#0F6E56;}
 .step-toggle-icon{color:var(--sand);font-size:0.7rem;margin-top:4px;transition:transform 0.2s;}
 .step.expanded .step-toggle-icon{transform:rotate(180deg);}
 
@@ -326,6 +331,8 @@ const PLAN = [
   {
     title: "Pull and segment your first 500 test contacts in Zeffy",
     aiOrHuman: 'human',
+    youGive: "1 hour reviewing your Zeffy export together",
+    youGetBack: "The 3-4 hours you'd otherwise spend manually cross-referencing open-rate exports yourself",
     description: "Tracy meets with you this week to look at Zeffy's backend together and pull the first 500 of your roughly 10,000 least-active subscribers — a safe, low-stakes group to test with.",
     whyItMatters: "Starting with your least-active contacts means your most engaged donors and members aren't touched while we figure out what actually works. Nothing about your main list changes.",
     actionItems: [
@@ -336,8 +343,10 @@ const PLAN = [
     resources: []
   },
   {
-    title: "Understand what Beehiiv actually is, and why we're testing it",
+    title: "Understand what Beehiiv actually is, and why we'd like to test it",
     aiOrHuman: 'human',
+    youGive: "15 minutes hearing it explained plainly",
+    youGetBack: "Confidence that nothing happens to your list without you understanding it first",
     description: "Before anything goes out, we walk through what Beehiiv does, how it's different from Zeffy, and exactly what will and won't change for your subscribers.",
     whyItMatters: "You should never feel like a tool is doing something to your list without understanding it first. This is a plain-language walkthrough, not a sales pitch.",
     actionItems: [
@@ -350,6 +359,8 @@ const PLAN = [
   {
     title: "Send one test newsletter to the first 500, and only those 500",
     aiOrHuman: 'ai',
+    youGive: "15 minutes approving one draft",
+    youGetBack: "A finished newsletter — the part that normally eats half a day",
     description: "A single, low-stakes test to see how tone and format land with your least-active contacts — without touching your regular Zeffy newsletter or your main list.",
     whyItMatters: "This is a look/feel/voice test, not a strategy change. Your regular newsletter through Zeffy keeps going exactly as it always has, to everyone.",
     actionItems: [
@@ -363,6 +374,8 @@ const PLAN = [
   {
     title: "Keep sending your regular newsletter through Zeffy — no changes",
     aiOrHuman: 'human',
+    youGive: "Nothing new — keep doing exactly what you're doing",
+    youGetBack: "Zero disruption while we test something small alongside it",
     description: "Everything you're already doing stays exactly the same. This test runs alongside it, not instead of it.",
     whyItMatters: "Nothing here requires you to change platforms, stop what's working, or hand over more control than you're ready for.",
     actionItems: [
@@ -373,6 +386,8 @@ const PLAN = [
   {
     title: "Everything else stays on pause until you're ready",
     aiOrHuman: 'human',
+    youGive: "Nothing right now",
+    youGetBack: "Full control over if and when anything bigger starts",
     description: "We have a much bigger set of ideas — segmenting your other valuable contacts, more content, and more — but none of it moves forward until you've seen how this first test goes and want to talk through more.",
     whyItMatters: "This whole plan is designed to go at your pace. Nothing gets expanded or automated without you in the room deciding it should.",
     actionItems: [
@@ -979,6 +994,11 @@ function render(){
             </span>
             ${assigneeSelectHtml(stepAssignee[i], `setAssignee(${i}, this.value)`)}
           </div>
+          ${step.youGive || step.youGetBack ? `
+          <div class="value-trade">
+            ${step.youGive ? `<span class="value-chip value-give">⏱ You give: ${step.youGive}</span>` : ''}
+            ${step.youGetBack ? `<span class="value-chip value-get">🎁 You get back: ${step.youGetBack}</span>` : ''}
+          </div>` : ''}
           <div class="step-desc">${step.description}</div>
         </div>
         <div class="step-toggle-icon">▼</div>
