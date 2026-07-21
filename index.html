@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta name="color-scheme" content="light"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Your AI Action Plan — Alpine Acres Sanctuary Farm</title>
 <style>
@@ -11,6 +12,7 @@
    confirmation of logo/colors/fonts. Re-run this swap once she approves.
    ========================================================================= */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{color-scheme:light;}
 :root{
   --navy:#2F4D3A;--navy-light:#3D6350;
   --teal:#C1652F;--teal-light:#D48857;--teal-pale:#E9F0E6;
@@ -62,6 +64,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .step-title-row{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.3rem;}
 .step-title{font-size:0.95rem;font-weight:700;color:var(--navy);}
 .step.done .step-title{color:var(--sand);text-decoration:line-through;}
+
+.completed-section{margin-top:1.5rem;padding-top:1.25rem;border-top:2px dashed var(--border);}
+.completed-header{display:flex;align-items:center;gap:0.5rem;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--sand);margin-bottom:0.9rem;}
+.completed-header span:last-child{color:var(--text-muted);font-weight:600;text-transform:none;letter-spacing:0;}
+.completed-section .step{opacity:0.75;}
+.completed-section .step:hover{opacity:1;}
 .tag{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px;white-space:nowrap;}
 .tag-ai{background:var(--teal-pale);color:#0F6E56;}
 .tag-human{background:#FAEEDA;color:#854F0B;}
@@ -88,9 +96,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .resource-link{display:inline-block;font-size:13px;color:var(--teal);text-decoration:none;font-weight:600;margin-right:1rem;}
 .resource-link:hover{text-decoration:underline;}
 
-.cta-card{margin-top:3rem;background:var(--navy);border-radius:var(--radius-lg);padding:2.25rem;text-align:center;}
-.cta-title{font-family:var(--d);font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
-.cta-body{font-size:14px;font-weight:400;color:rgba(255,255,255,0.7);margin-bottom:1.5rem;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto;}
+.cta-card{margin-top:3rem;background:linear-gradient(135deg, var(--teal-pale) 0%, var(--white) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.25rem;text-align:center;}
+.cta-title{font-family:var(--d);font-size:1.3rem;font-weight:700;color:var(--navy);margin-bottom:0.5rem;}
+.cta-body{font-size:14px;font-weight:400;color:var(--navy);margin-bottom:1.5rem;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto;}
 .cta-btn{display:inline-block;padding:13px 28px;background:var(--teal);color:#fff;font-size:14px;font-weight:600;border-radius:var(--radius-sm);text-decoration:none;}
 .cta-btn:hover{filter:brightness(1.08);}
 
@@ -161,6 +169,58 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
    climb with checkpoints. The short progress bar above stays focused on
    just the near-term steps; this is the bigger picture. */
 .dashboard-card{margin-top:1.1rem;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.6rem;}
+
+/* SUMMARY PANEL — the "TL;DR" for a busy owner. Expanded by default. */
+.summary-card{background:linear-gradient(135deg, var(--teal-pale) 0%, var(--white) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.6rem;margin-bottom:1.25rem;}
+.summary-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.summary-title{font-family:var(--d);font-size:0.95rem;font-weight:700;color:var(--navy);}
+.summary-chevron{font-size:11px;color:var(--sand);transition:transform 0.2s;}
+.summary-card.collapsed .summary-chevron{transform:rotate(180deg);}
+.summary-body{max-height:600px;overflow:hidden;transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;opacity:1;margin-top:0.9rem;}
+.summary-card.collapsed .summary-body{max-height:0;opacity:0;margin-top:0;}
+.summary-impact{margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--border);}
+.summary-impact-num{font-family:var(--d);font-size:1.9rem;font-weight:700;color:var(--teal);line-height:1.1;}
+.summary-impact-label{font-size:11.5px;color:var(--text-muted);margin-top:0.15rem;}
+.summary-impact-caption{font-size:10px;color:var(--sand);margin-top:0.2rem;font-style:italic;}
+.summary-roadmap-potential{font-size:12px;color:var(--navy);margin-top:0.6rem;padding-top:0.6rem;border-top:1px dashed var(--border);}
+.summary-roadmap-potential strong{color:var(--teal);font-family:var(--d);font-size:14px;}
+.summary-wins-box{background:var(--teal-pale);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:0.9rem 1rem 1rem;}
+.summary-wins-label{font-size:14px;font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--amber);margin-bottom:0.7rem;display:flex;align-items:center;gap:0.45rem;}
+.summary-wins-list{list-style:none;display:flex;flex-direction:column;gap:0.45rem;}
+.summary-wins-list li{font-size:14.5px;font-weight:600;color:var(--navy);padding-left:1.2rem;position:relative;line-height:1.5;}
+.summary-wins-list li::before{content:'→';position:absolute;left:0;color:var(--amber);font-weight:700;}
+
+/* MINI-CARDS — Executive Summary / Recommended Solutions / Financial Impact */
+.mini-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.6rem;margin-bottom:1rem;}
+.mini-card-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.mini-card-title{font-family:var(--d);font-size:0.92rem;font-weight:700;color:var(--navy);}
+.mini-card-chevron{font-size:11px;color:var(--sand);transition:transform 0.2s;}
+.mini-card.expanded .mini-card-chevron{transform:rotate(180deg);}
+.mini-card-body{max-height:0;overflow:hidden;opacity:0;transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;}
+.mini-card.expanded .mini-card-body{max-height:900px;opacity:1;margin-top:0.9rem;}
+
+.mini-row{display:flex;flex-direction:column;gap:0.25rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+.mini-row:last-child{border-bottom:none;}
+.mini-row-label{font-size:10.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--sand);}
+.mini-row-value{font-size:13.5px;color:var(--text-dark);line-height:1.55;}
+
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(160px,1fr));gap:0.75rem;}
+.tool-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.8rem 0.9rem;}
+.tool-name{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:0.5rem;}
+.tool-stat{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-muted);padding:0.15rem 0;}
+.tool-stat span:last-child{color:var(--text-dark);font-weight:600;}
+
+.financial-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px,1fr));gap:0.75rem;}
+.financial-stat{border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.8rem 0.9rem;text-align:center;}
+.financial-num{font-family:var(--d);font-size:1.3rem;font-weight:700;color:var(--teal);}
+.financial-label{font-size:10.5px;color:var(--text-muted);margin-top:0.2rem;}
+
+/* WAYS WE CAN HELP */
+.ways-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px,1fr));gap:0.75rem;margin-top:0.9rem;}
+.way-card{background:var(--white);border:1px solid var(--border);border-left-width:4px;border-radius:var(--radius-sm);padding:1rem 1.1rem;}
+.way-title{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
+.way-icon{font-size:1.3rem;margin-bottom:0.5rem;display:block;}
+.way-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;}
 .dashboard-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
 .dashboard-title{font-family:var(--d);font-size:0.95rem;font-weight:700;color:var(--navy);}
 .dashboard-pct{font-family:var(--d);font-size:1.2rem;font-weight:700;color:var(--teal);}
@@ -213,6 +273,66 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
   <h1 class="hero-title" id="heroTitle">Loading...</h1>
   <p class="hero-sub" id="heroSub"></p>
 
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-top" onclick="toggleSummaryCollapse()">
+      <div class="summary-title">Quick Summary</div>
+      <div class="summary-chevron" id="summaryChevron">▲</div>
+    </div>
+    <div class="summary-body" id="summaryBody">
+      <div class="summary-impact">
+        <div class="summary-impact-num" id="summaryImpactNum">—</div>
+        <div class="summary-impact-label">hours your initial action steps could save you</div>
+        <div class="summary-impact-caption">one-time total across all 5 steps above — not a weekly or monthly rate</div>
+        <div class="summary-roadmap-potential" id="roadmapPotentialLine" style="display:none;"></div>
+      </div>
+      <div class="summary-wins-box">
+        <div class="summary-wins-label">🎯 Where to start</div>
+        <ul class="summary-wins-list" id="summaryWinsList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mini-card" id="execCard">
+    <div class="mini-card-top" onclick="toggleMiniCard('execCard')">
+      <div class="mini-card-title">Executive Summary</div>
+      <div class="mini-card-chevron">▲</div>
+    </div>
+    <div class="mini-card-body">
+      <div class="mini-row" id="execPainRow">
+        <div class="mini-row-label">The Pain</div>
+        <div class="mini-row-value" id="execPainVal"></div>
+      </div>
+      <div class="mini-row" id="execOutcomeRow">
+        <div class="mini-row-label">The Outcome</div>
+        <div class="mini-row-value" id="execOutcomeVal"></div>
+      </div>
+      <div class="mini-row" id="execFocusRow">
+        <div class="mini-row-label">Primary Focus</div>
+        <div class="mini-row-value" id="execFocusVal"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mini-card" id="toolsCard">
+    <div class="mini-card-top" onclick="toggleMiniCard('toolsCard')">
+      <div class="mini-card-title">Recommended Solutions</div>
+      <div class="mini-card-chevron">▲</div>
+    </div>
+    <div class="mini-card-body">
+      <div class="tools-grid" id="toolsGrid"></div>
+    </div>
+  </div>
+
+  <div class="mini-card" id="financialCard">
+    <div class="mini-card-top" onclick="toggleMiniCard('financialCard')">
+      <div class="mini-card-title">Financial Impact</div>
+      <div class="mini-card-chevron">▲</div>
+    </div>
+    <div class="mini-card-body">
+      <div class="financial-grid" id="financialGrid"></div>
+    </div>
+  </div>
+
   <div class="progress-wrap">
     <div class="progress-top">
       <div class="progress-label">Overall progress</div>
@@ -248,8 +368,16 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     </div>
   </div>
 
-  <div class="section-label">Action steps</div>
+  <div class="section-label">Initial action steps</div>
   <div id="stepsList"></div>
+
+  <div class="completed-section" id="completedSection" style="display:none;">
+    <div class="completed-header">
+      <span>✓ Completed</span>
+      <span id="completedCount"></span>
+    </div>
+    <div id="completedList"></div>
+  </div>
 
   <div class="chat-card">
     <div class="chat-title">Talk it through</div>
@@ -289,6 +417,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
   </div>
   <div id="roadmapList"></div>
 
+  <div class="ways-help-section">
+    <div class="section-label">Ways we can keep helping</div>
+    <div class="future-sub">If any of this sounds useful down the road, just ask — no pressure, no pitch.</div>
+    <div class="ways-grid" id="waysGrid"></div>
+  </div>
+
   <div class="cta-card">
     <div class="cta-title">Questions on any of these steps?</div>
     <div class="cta-body">Book time with your advisor to walk through progress, priorities, or anything that's unclear.</div>
@@ -327,12 +461,41 @@ const STATS = {
   openRateNow: null               // e.g. '24%' — fill in once known
 };
 
+const EXEC_SUMMARY = {
+  pain: "Nearly 200 rescued animals, a 4.9-star reputation, and 19,044 people who chose to hear from you — but no way to tell who's actually reading versus who's gone quiet.",
+  outcome: "A newsletter that speaks differently to your most engaged supporters versus everyone else, without touching what already works.",
+  primaryFocus: "Get the first 500-contact Beehiiv test right, before deciding whether to go any further."
+};
+
+const TOOLS = [
+  { name: 'Zeffy', cost: 'Free, always', setup: 'No changes', saves: 'Stays exactly as-is' },
+  { name: 'Beehiiv (test group only)', cost: 'Free up to 2,500 subscribers', setup: '~1 hour with Tracy', saves: 'The manual cross-referencing you\'re doing today' }
+];
+
+// FINANCIAL_IMPACT — left blank on purpose. No dollar figures have been
+// agreed with Agnes yet, so nothing here would be honest. The whole card
+// stays hidden until real numbers exist — don't fill these in with a guess.
+const FINANCIAL_IMPACT = {
+  weeklyHoursReturned: null,
+  monthlyToolCost: null,
+  monthlyNetValue: null
+};
+
+const WAYS_WE_HELP = [
+  { icon: '🧩', color: 'var(--teal)', title: "Redesigning a process end-to-end", description: "When a whole workflow needs rethinking, not just one step." },
+  { icon: '⚙️', color: 'var(--amber)', title: "Building automations", description: "Connecting the tools you already use so less falls on you manually." },
+  { icon: '📚', color: 'var(--navy-light)', title: "Training a system on your own content", description: "A custom assistant that actually knows your business." },
+  { icon: '🤝', color: 'var(--emerald)', title: "Ongoing hands-on support", description: "Regular working sessions until this becomes second nature." },
+  { icon: '🚀', color: 'var(--teal)', title: "Full implementation", description: "We build and run it end-to-end, tailored to how you work." }
+];
+
 const PLAN = [
   {
     title: "Pull and segment your first 500 test contacts in Zeffy",
     aiOrHuman: 'human',
     youGive: "1 hour reviewing your Zeffy export together",
     youGetBack: "The 3-4 hours you'd otherwise spend manually cross-referencing open-rate exports yourself",
+    hoursSaved: 3.5,
     description: "Tracy meets with you this week to look at Zeffy's backend together and pull the first 500 of your roughly 10,000 least-active subscribers — a safe, low-stakes group to test with.",
     whyItMatters: "Starting with your least-active contacts means your most engaged donors and members aren't touched while we figure out what actually works. Nothing about your main list changes.",
     actionItems: [
@@ -347,6 +510,7 @@ const PLAN = [
     aiOrHuman: 'human',
     youGive: "15 minutes hearing it explained plainly",
     youGetBack: "Confidence that nothing happens to your list without you understanding it first",
+    hoursSaved: null,
     description: "Before anything goes out, we walk through what Beehiiv does, how it's different from Zeffy, and exactly what will and won't change for your subscribers.",
     whyItMatters: "You should never feel like a tool is doing something to your list without understanding it first. This is a plain-language walkthrough, not a sales pitch.",
     actionItems: [
@@ -361,6 +525,7 @@ const PLAN = [
     aiOrHuman: 'ai',
     youGive: "15 minutes approving one draft",
     youGetBack: "A finished newsletter — the part that normally eats half a day",
+    hoursSaved: 4,
     description: "A single, low-stakes test to see how tone and format land with your least-active contacts — without touching your regular Zeffy newsletter or your main list.",
     whyItMatters: "This is a look/feel/voice test, not a strategy change. Your regular newsletter through Zeffy keeps going exactly as it always has, to everyone.",
     actionItems: [
@@ -376,6 +541,7 @@ const PLAN = [
     aiOrHuman: 'human',
     youGive: "Nothing new — keep doing exactly what you're doing",
     youGetBack: "Zero disruption while we test something small alongside it",
+    hoursSaved: null,
     description: "Everything you're already doing stays exactly the same. This test runs alongside it, not instead of it.",
     whyItMatters: "Nothing here requires you to change platforms, stop what's working, or hand over more control than you're ready for.",
     actionItems: [
@@ -388,6 +554,7 @@ const PLAN = [
     aiOrHuman: 'human',
     youGive: "Nothing right now",
     youGetBack: "Full control over if and when anything bigger starts",
+    hoursSaved: null,
     description: "We have a much bigger set of ideas — segmenting your other valuable contacts, more content, and more — but none of it moves forward until you've seen how this first test goes and want to talk through more.",
     whyItMatters: "This whole plan is designed to go at your pace. Nothing gets expanded or automated without you in the room deciding it should.",
     actionItems: [
@@ -700,6 +867,150 @@ function updateRoadmapStepNote(i, value){
   }, 400);
 }
 
+function getTotalPotentialHours(){
+  return PLAN.reduce((sum, step) => {
+    const n = typeof step.hoursSaved === 'number' ? step.hoursSaved : 0;
+    return sum + n;
+  }, 0);
+}
+
+function getRoadmapPotentialHours(){
+  return ROADMAP.reduce((sum, step) => {
+    const n = typeof step.hoursSaved === 'number' ? step.hoursSaved : 0;
+    return sum + n;
+  }, 0);
+}
+
+function formatHours(n){
+  if(n === 0) return null;
+  return (Math.round(n * 10) / 10).toString().replace(/\.0$/, '');
+}
+
+function summaryCollapseKey(){ return 'elevate-summary-collapsed-' + CLIENT.slug; }
+function toggleSummaryCollapse(){
+  const card = document.getElementById('summaryCard');
+  if(!card) return;
+  const nowCollapsed = !card.classList.contains('collapsed');
+  card.classList.toggle('collapsed', nowCollapsed);
+  try{ localStorage.setItem(summaryCollapseKey(), nowCollapsed ? '1' : '0'); }catch(e){}
+}
+function applySavedSummaryCollapseState(){
+  const card = document.getElementById('summaryCard');
+  if(!card) return;
+  let saved = null;
+  try{ saved = localStorage.getItem(summaryCollapseKey()); }catch(e){}
+  if(saved === '1') card.classList.add('collapsed');
+}
+
+function renderSummary(){
+  const totalHours = getTotalPotentialHours();
+  const formatted = formatHours(totalHours);
+  const impactEl = document.getElementById('summaryImpactNum');
+  const impactWrap = impactEl ? impactEl.closest('.summary-impact') : null;
+  if(impactEl){
+    if(formatted){
+      impactEl.textContent = formatted + (totalHours === 1 ? ' hour' : ' hours');
+      if(impactWrap) impactWrap.style.display = 'block';
+    } else if(impactWrap){
+      impactWrap.style.display = 'none';
+    }
+  }
+  const winsList = document.getElementById('summaryWinsList');
+  if(winsList){
+    const topSteps = PLAN.slice(0, 3);
+    winsList.innerHTML = topSteps.map(step => `<li>${step.title}</li>`).join('');
+  }
+
+  const roadmapHours = getRoadmapPotentialHours();
+  const roadmapFormatted = formatHours(roadmapHours);
+  const roadmapLine = document.getElementById('roadmapPotentialLine');
+  if(roadmapLine){
+    if(roadmapFormatted){
+      roadmapLine.innerHTML = `+ <strong>${roadmapFormatted} hours</strong> more possible if you continue through the full roadmap below`;
+      roadmapLine.style.display = 'block';
+    } else {
+      roadmapLine.style.display = 'none';
+    }
+  }
+}
+
+function toggleMiniCard(id){
+  const card = document.getElementById(id);
+  if(!card) return;
+  card.classList.toggle('expanded');
+}
+
+function renderExecSummary(){
+  const rows = [
+    { key: 'pain', elId: 'execPainRow', valId: 'execPainVal' },
+    { key: 'outcome', elId: 'execOutcomeRow', valId: 'execOutcomeVal' },
+    { key: 'primaryFocus', elId: 'execFocusRow', valId: 'execFocusVal' }
+  ];
+  let anyFilled = false;
+  rows.forEach(r => {
+    const val = EXEC_SUMMARY[r.key];
+    const rowEl = document.getElementById(r.elId);
+    if(val){
+      document.getElementById(r.valId).textContent = val;
+      if(rowEl) rowEl.style.display = 'flex';
+      anyFilled = true;
+    } else if(rowEl){
+      rowEl.style.display = 'none';
+    }
+  });
+  const card = document.getElementById('execCard');
+  if(card) card.style.display = anyFilled ? 'block' : 'none';
+}
+
+function renderTools(){
+  const card = document.getElementById('toolsCard');
+  const grid = document.getElementById('toolsGrid');
+  if(!TOOLS || TOOLS.length === 0){
+    if(card) card.style.display = 'none';
+    return;
+  }
+  if(card) card.style.display = 'block';
+  if(grid){
+    grid.innerHTML = TOOLS.map(t => `
+      <div class="tool-card">
+        <div class="tool-name">${t.name}</div>
+        ${t.cost ? `<div class="tool-stat"><span>Cost</span><span>${t.cost}</span></div>` : ''}
+        ${t.setup ? `<div class="tool-stat"><span>Setup</span><span>${t.setup}</span></div>` : ''}
+        ${t.saves ? `<div class="tool-stat"><span>Saves</span><span>${t.saves}</span></div>` : ''}
+      </div>
+    `).join('');
+  }
+}
+
+function renderFinancialImpact(){
+  const stats = [];
+  if(FINANCIAL_IMPACT.weeklyHoursReturned !== null) stats.push({ num: FINANCIAL_IMPACT.weeklyHoursReturned + ' hrs', label: 'returned per week' });
+  if(FINANCIAL_IMPACT.monthlyToolCost !== null) stats.push({ num: '$' + FINANCIAL_IMPACT.monthlyToolCost, label: 'total monthly tool cost' });
+  if(FINANCIAL_IMPACT.monthlyNetValue !== null) stats.push({ num: '$' + FINANCIAL_IMPACT.monthlyNetValue, label: 'estimated monthly net value' });
+  const card = document.getElementById('financialCard');
+  const grid = document.getElementById('financialGrid');
+  if(stats.length === 0){
+    if(card) card.style.display = 'none';
+    return;
+  }
+  if(card) card.style.display = 'block';
+  if(grid){
+    grid.innerHTML = stats.map(s => `<div class="financial-stat"><div class="financial-num">${s.num}</div><div class="financial-label">${s.label}</div></div>`).join('');
+  }
+}
+
+function renderWaysHelp(){
+  const grid = document.getElementById('waysGrid');
+  if(!grid) return;
+  grid.innerHTML = WAYS_WE_HELP.map(w => `
+    <div class="way-card" style="border-left-color:${w.color || 'var(--teal)'};">
+      ${w.icon ? `<span class="way-icon">${w.icon}</span>` : ''}
+      <div class="way-title">${w.title}</div>
+      <div class="way-desc">${w.description}</div>
+    </div>
+  `).join('');
+}
+
 function dashboardCollapseKey(){ return 'elevate-dashboard-collapsed-' + CLIENT.slug; }
 function toggleDashboardCollapse(){
   const card = document.getElementById('dashboardCard');
@@ -776,51 +1087,54 @@ function renderIdeas(){
    things off here is just personal tracking/curiosity, not a commitment.
    ========================================================================= */
 const ROADMAP = [
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Zeffy export and full list segmentation", aiOrHuman: 'human',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Zeffy export and full list segmentation", aiOrHuman: 'human', hoursSaved: 2,
+    youGive: "1-2 hours pulling lists together", youGetBack: "A clean, cross-referenced list ready for future segmentation",
     description: "Pull every list out of Zeffy and build the full cross-reference the rest of this depends on.",
     actionItems: ["Pull all-subscribers, donor, and visitor lists from Zeffy", "Build a cross-reference spreadsheet", "Identify the full least-engaged segment beyond the first 500", "Identify visited-but-not-donated and donor/member segments"] },
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Beehiiv setup beyond the test group", aiOrHuman: 'human',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Beehiiv setup beyond the test group", aiOrHuman: 'human', youGive: "30 minutes approving domain and brand settings", youGetBack: "A fully configured newsletter platform ready to scale beyond the test",
     description: "If the 500-contact test lands well, stand up Beehiiv properly for the full least-engaged segment.",
     actionItems: ["Configure custom domain and brand colors", "Set up saved content-block templates", "Turn on the public newsletter archive for SEO", "Build a welcome sequence for new subscribers"] },
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Voice-to-newsletter pipeline", aiOrHuman: 'ai',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early", title: "Voice-to-newsletter pipeline", aiOrHuman: 'ai', youGive: "A few short voice recordings, whenever it's convenient", youGetBack: "Newsletters drafted from your own voice, ready for your review",
     description: "The centerpiece idea: you record a voice note, the system drafts the newsletter for your review.",
     actionItems: ["Set up a dedicated recording method (voice note or short video)", "Build the pipeline: recording → transcript → drafted sections", "Test on past newsletters before ever connecting it live", "You approve every draft before anything sends — always"] },
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early-mid", title: "Content library from your stories", aiOrHuman: 'human',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Early-mid", title: "Content library from your stories", aiOrHuman: 'human', youGive: "1-2 recording sessions telling stories you already tell visitors", youGetBack: "Months of ready-to-use newsletter and social content",
     description: "A couple of recording sessions, in your own words, that feed newsletter and social content for months.",
     actionItems: ["Record the animal stories you already tell visitors, in your words", "Record a short farm-walking video for future use", "Transcribe both so they're ready to draw from later"] },
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid", title: "Blog scheduling and SEO recovery", aiOrHuman: 'human',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid", title: "Blog scheduling and SEO recovery", aiOrHuman: 'human', youGive: "Access to your publishing schedule, once", youGetBack: "Steady weekly posts and recovered search visibility, without extra writing",
     description: "Fix the batch-posting habit and start recovering lost search traffic.",
     actionItems: ["Get publishing-schedule access from your web team", "Spread posts to roughly one per week going forward", "Write a few personal animal-story posts from recorded content", "Add a newsletter signup link to every blog post"] },
-  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid-late", title: "Brand kit and sponsorship deck", aiOrHuman: 'human',
+  { phase: 1, phaseTitle: "Foundation", days: "Once the test group is approved", dayRange: "Mid-late", title: "Brand kit and sponsorship deck", aiOrHuman: 'human', youGive: "Confirming your existing logo and colors", youGetBack: "A polished sponsorship pitch ready to send to local businesses",
     description: "Lock the visual standards and put together a real, tiered sponsorship offer.",
     actionItems: ["Finalize brand colors and typography from your existing logo", "Build a one-page sponsorship deck with clear pricing tiers", "Put together a realistic list of local businesses to approach"] },
 
-  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early", title: "First full AI-assisted newsletter", aiOrHuman: 'human',
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early", title: "First full AI-assisted newsletter", aiOrHuman: 'human', hoursSaved: 4,
+    youGive: "15 minutes approving the draft", youGetBack: "A finished newsletter to your full list — the part that normally eats half a day",
     description: "Once you've approved the approach, send the first real AI-assisted issue to the wider group.",
     actionItems: ["Review everything built so far together", "Approve the templates and setup", "Record your first real voice note for a live issue", "Review the draft and approve before it sends"] },
-  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early-mid", title: "A small giving campaign, if you want one", aiOrHuman: 'ai',
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Early-mid", title: "A small giving campaign, if you want one", aiOrHuman: 'ai', youGive: "A few minutes approving each email", youGetBack: "A short giving series drafted and ready, only sent with your OK",
     description: "A short, scheduled series of asks — only if and when you're comfortable running one.",
     actionItems: ["Draft a short 2-3 email giving series for your review", "You approve each one individually before anything sends", "Track results together afterward"] },
-  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid", title: "Social content from one recording session", aiOrHuman: 'ai',
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid", title: "Social content from one recording session", aiOrHuman: 'ai', hoursSaved: 3,
+    youGive: "One short phone-recorded farm tour", youGetBack: "Weeks of social posts made from a single recording",
     description: "Turn one phone-recorded farm tour into weeks of social posts.",
     actionItems: ["Record a short walking farm tour on your phone", "Produce a batch of posts from that single recording", "You approve a batch at a time before it's scheduled"] },
-  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid-late", title: "Corporate sponsor outreach", aiOrHuman: 'human',
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Mid-late", title: "Corporate sponsor outreach", aiOrHuman: 'human', youGive: "A list of warm intros you can make", youGetBack: "Structured outreach and follow-up handled for you",
     description: "Warm intros and direct outreach using the sponsorship deck from Phase 1.",
     actionItems: ["Warm introductions through existing relationships", "Direct outreach to a targeted local business list", "A simple follow-up sequence over a few weeks"] },
-  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Late", title: "Public visibility push", aiOrHuman: 'human',
+  { phase: 2, phaseTitle: "Launch", days: "After you've reviewed test results and want to continue", dayRange: "Late", title: "Public visibility push", aiOrHuman: 'human', youGive: "Availability for a talk or press interview", youGetBack: "A prepared talk and press pitch, ready to use",
     description: "Rotary talks, local press, and camp-season visibility, timed to when it's useful.",
     actionItems: ["A short talk prepared for local community groups", "A press pitch built around a real, specific story", "Feature camp or visit booking prominently online"] },
 
-  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Early", title: "Look at what's actually working", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Early", title: "Look at what's actually working", aiOrHuman: 'ai', youGive: "30 minutes reviewing results together", youGetBack: "A clear, honest read on what to double down on",
     description: "Review real numbers across every channel before deciding what to expand.",
     actionItems: ["Compare open/click results across everything sent so far", "Identify which stories and animals drive the most engagement", "Decide together what to double down on and what to drop"] },
-  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid", title: "Grant research, automated", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid", title: "Grant research, automated", aiOrHuman: 'ai', youGive: "A few minutes reviewing the weekly shortlist", youGetBack: "Hours of grant research done for you, every week",
     description: "A weekly scan for grant funding that fits your farm's specific needs.",
     actionItems: ["Set up a weekly automated scan of grant databases", "Score opportunities by fit, deadline, and value", "Draft narrative sections in your own words from past recordings"] },
-  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid-late", title: "A paid newsletter tier, if it fits", aiOrHuman: 'ai',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Mid-late", title: "A paid newsletter tier, if it fits", aiOrHuman: 'ai', youGive: "A conversation about whether this fits your audience", youGetBack: "A simple new revenue option, only if it makes sense",
     description: "An optional behind-the-scenes tier for your most engaged supporters — only if it feels right.",
     actionItems: ["Confirm the free newsletter is running smoothly first", "Decide together whether a paid tier makes sense for your audience", "If yes, keep it simple to start"] },
-  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Late", title: "Handoff and results review", aiOrHuman: 'human',
+  { phase: 3, phaseTitle: "Elevate", days: "Once things are running and you want to refine", dayRange: "Late", title: "Handoff and results review", aiOrHuman: 'human', youGive: "Time to train whoever owns this going forward", youGetBack: "A system your team can run without us",
     description: "Make sure your team can run everything without us, and look back at what it actually did.",
     actionItems: ["Document how everything works so your team can run it", "Train whoever will own the ongoing approval process", "Look back together at what changed — time saved, engagement, donations", "Set up an ongoing monthly check-in, on your schedule"] },
 ];
@@ -897,6 +1211,11 @@ function renderRoadmap(){
             <span class="tag ${step.aiOrHuman === 'ai' ? 'tag-ai' : 'tag-human'}">${step.aiOrHuman === 'ai' ? 'AI-assisted' : 'Human-led'}</span>
             ${assigneeSelectHtml(roadmapStepAssignee[i], `setRoadmapAssignee(${i}, this.value)`)}
           </div>
+          ${step.youGive || step.youGetBack ? `
+          <div class="value-trade">
+            ${step.youGive ? `<span class="value-chip value-give">⏱ You give: ${step.youGive}</span>` : ''}
+            ${step.youGetBack ? `<span class="value-chip value-get">🎁 You get back: ${step.youGetBack}</span>` : ''}
+          </div>` : ''}
           <div class="step-desc">${step.description}</div>
         </div>
         <div class="step-toggle-icon">▼</div>
@@ -968,21 +1287,8 @@ function toggleSub(i, ai){
 }
 function toggleExpand(i){ stepExpanded[i] = !stepExpanded[i]; render(); }
 
-function render(){
-  const params = getParams();
-  const displayName = params.name || CLIENT.clientName;
-  document.getElementById('heroTitle').textContent =
-    displayName ? `Here's your plan, ${displayName}.` : "Here's your plan.";
-  document.getElementById('heroSub').textContent =
-    CLIENT.subhead + (CLIENT.businessName ? ` — ${CLIENT.businessName}` : '');
-  document.getElementById('ctaLink').href = CLIENT.bookingUrl;
-
-  const doneCount = PLAN.filter((_, i) => progress[i]).length;
-  document.getElementById('progressCount').textContent = `${doneCount} of ${PLAN.length} complete`;
-  document.getElementById('progressFill').style.width = (PLAN.length ? (doneCount / PLAN.length * 100) : 0) + '%';
-
-  const list = document.getElementById('stepsList');
-  list.innerHTML = PLAN.map((step, i) => `
+function stepCardHtml(step, i){
+  return `
     <div class="step ${progress[i] ? 'done' : ''} ${stepExpanded[i] ? 'expanded' : ''}" id="step-${i}">
       <div class="step-head" onclick="toggleExpand(${i})">
         <button class="step-check" onclick="event.stopPropagation(); toggleDone(${i});">${progress[i] ? '✓' : ''}</button>
@@ -1024,12 +1330,49 @@ function render(){
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+function render(){
+  const params = getParams();
+  const displayName = params.name || CLIENT.clientName;
+  document.getElementById('heroTitle').textContent =
+    displayName ? `Here's your plan, ${displayName}.` : "Here's your plan.";
+  document.getElementById('heroSub').textContent =
+    CLIENT.subhead + (CLIENT.businessName ? ` — ${CLIENT.businessName}` : '');
+  document.getElementById('ctaLink').href = CLIENT.bookingUrl;
+
+  const doneCount = PLAN.filter((_, i) => progress[i]).length;
+  document.getElementById('progressCount').textContent = `${doneCount} of ${PLAN.length} complete`;
+  document.getElementById('progressFill').style.width = (PLAN.length ? (doneCount / PLAN.length * 100) : 0) + '%';
+
+  const activeIndices = [];
+  const completedIndices = [];
+  PLAN.forEach((step, i) => { (progress[i] ? completedIndices : activeIndices).push(i); });
+
+  const list = document.getElementById('stepsList');
+  list.innerHTML = activeIndices.map(i => stepCardHtml(PLAN[i], i)).join('');
+
+  const completedSection = document.getElementById('completedSection');
+  const completedList = document.getElementById('completedList');
+  if(completedIndices.length > 0){
+    completedSection.style.display = 'block';
+    document.getElementById('completedCount').textContent = `(${completedIndices.length})`;
+    completedList.innerHTML = completedIndices.map(i => stepCardHtml(PLAN[i], i)).join('');
+  } else {
+    completedSection.style.display = 'none';
+  }
 }
 loadAssignees();
 loadRoadmapAssignees();
 loadNotes();
 loadRoadmapNotes();
+applySavedSummaryCollapseState();
+renderSummary();
+renderExecSummary();
+renderTools();
+renderFinancialImpact();
+renderWaysHelp();
 render();
 renderIdeas();
 loadRoadmapState();
