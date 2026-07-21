@@ -127,6 +127,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .chat-actions{display:flex;gap:0.6rem;flex-wrap:wrap;}
 .chat-actions button{padding:0.5rem 0.9rem;background:transparent;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text-muted);cursor:pointer;font-weight:600;}
 .chat-actions button:hover{background:var(--cream);}
+.privacy-note{margin-top:0.9rem;padding-top:0.9rem;border-top:1px solid var(--border);font-size:11px;color:var(--sand);line-height:1.6;}
 
 /* FUTURE IDEAS — visually distinct from active steps: no checkbox, no
    progress tracking, just something to open and read when curious. */
@@ -221,6 +222,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 .way-title{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
 .way-icon{font-size:1.3rem;margin-bottom:0.5rem;display:block;}
 .way-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;}
+.way-price{font-size:11.5px;font-weight:700;color:var(--navy);margin-top:0.6rem;padding-top:0.5rem;border-top:1px solid var(--border);}
 .dashboard-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
 .dashboard-title{font-family:var(--d);font-size:0.95rem;font-weight:700;color:var(--navy);}
 .dashboard-pct{font-family:var(--d);font-size:1.2rem;font-weight:700;color:var(--teal);}
@@ -395,6 +397,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
       <button id="chatDownload">Download conversation</button>
       <button id="chatEmail">Email this to your advisor</button>
     </div>
+    <div class="privacy-note">
+      Anything typed or said here goes to Claude (an AI made by Anthropic) to help turn it into
+      usable content — nothing more. It's not used to train AI models, sold, or shared outside
+      this project. What's typed is saved in this browser only; it doesn't sync to our team
+      automatically — use "Email this to your advisor" any time you want us to actually see it.
+    </div>
   </div>
 
   <div class="future-heading">
@@ -481,12 +489,14 @@ const FINANCIAL_IMPACT = {
   monthlyNetValue: null
 };
 
+// priceRange is a rough band, not a quote — keep it honest and vague
+// enough that it doesn't read as a locked-in price before any scoping call.
 const WAYS_WE_HELP = [
-  { icon: '🧩', color: 'var(--teal)', title: "Redesigning a process end-to-end", description: "When a whole workflow needs rethinking, not just one step." },
-  { icon: '⚙️', color: 'var(--amber)', title: "Building automations", description: "Connecting the tools you already use so less falls on you manually." },
-  { icon: '📚', color: 'var(--navy-light)', title: "Training a system on your own content", description: "A custom assistant that actually knows your business." },
-  { icon: '🤝', color: 'var(--emerald)', title: "Ongoing hands-on support", description: "Regular working sessions until this becomes second nature." },
-  { icon: '🚀', color: 'var(--teal)', title: "Full implementation", description: "We build and run it end-to-end, tailored to how you work." }
+  { icon: '🧩', color: 'var(--teal)', title: "Redesigning a process end-to-end", description: "When a whole workflow needs rethinking, not just one step.", priceRange: "$3,000-$5,000" },
+  { icon: '⚙️', color: 'var(--amber)', title: "Building automations", description: "Connecting the tools you already use so less falls on you manually.", priceRange: "$1,000-$3,000" },
+  { icon: '📚', color: 'var(--navy-light)', title: "Training a system on your own content", description: "A custom assistant that actually knows your business.", priceRange: "~$3,000" },
+  { icon: '🤝', color: 'var(--emerald)', title: "Ongoing hands-on support", description: "Regular working sessions until this becomes second nature.", priceRange: "$3,000-$5,000" },
+  { icon: '🚀', color: 'var(--teal)', title: "Full implementation", description: "We build and run it end-to-end, tailored to how you work.", priceRange: "$5,000-$10,000" }
 ];
 
 const PLAN = [
@@ -1007,6 +1017,7 @@ function renderWaysHelp(){
       ${w.icon ? `<span class="way-icon">${w.icon}</span>` : ''}
       <div class="way-title">${w.title}</div>
       <div class="way-desc">${w.description}</div>
+      ${w.priceRange ? `<div class="way-price">${w.priceRange}</div>` : ''}
     </div>
   `).join('');
 }
